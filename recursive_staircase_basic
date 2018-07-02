@@ -1,0 +1,23 @@
+#include <iostream>
+using namespace std;
+
+unsigned int build_path( unsigned step_no, unsigned int total_steps ){
+    if ( step_no == total_steps )
+        return 1;        // a path is complete.
+    if ( step_no > total_steps )
+        return 0;        // path cannot be completed by previous step.
+        
+    return ( build_path( step_no+1, total_steps ) + build_path( step_no + 2, total_steps ) );
+}
+
+unsigned int num_ways( unsigned int n ){
+    return build_path( 0, n );
+}
+
+int main() {
+	unsigned int n;
+	cout << "Enter num of stairs" << endl;
+	cin >> n;
+	cout << "Total ways = " << num_ways(n);
+	return 0;
+}
