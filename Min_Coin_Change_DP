@@ -1,0 +1,83 @@
+// Solution to solve Min Coin Change problem through Dynamic programming.
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+int minNumOfCoinsDp( int value, vector<int> &denominations, int minCoinsCache[] ){
+    if ( value == 0 ){   // Base condition of our recursion.
+        return 0;
+    }
+    
+    int min = value; // assuming min denomination is 1.
+    
+    if ( minCoinsCache[value-1] == -2 ){ // Min Coins for this value have never been computed.
+        int count = 0, num = 0;
+        for ( int i = 0; i < denominations.size(); i++  ){
+            if ( value - denominations[i] >= 0 ){
+                num = minNumOfCoinsDp( value - denominations[i], denominations, minCoinsCache );
+                if ( num == -1 ){
+                    count++; // After performing the recursion, could not use this denomination to form change.
+                }
+                else{
+                    num++;
+                    if ( num < min ){
+                        min = num;
+                    }
+                }
+            }
+            else{
+                count++;
+            }
+        }
+        
+        if ( count == denominations.size() ) min = -1;  // no denomiation could be used for this value.
+        minCoinsCache[value-1] = min;
+    }
+    else{ // Min Coins have already been computed and cached, return cached value which could be -1.
+        min = minCoinsCache[value-1];
+    }
+    
+    return min;
+}
+
+int minNumOfCoins( int value, vector<int> &denominations ){
+    
+    int minCoinsCache[value];
+    for(auto & cache: minCoinsCache)
+    {
+        cache = -2;
+    }
+
+    int retVal = minNumOfCoinsDp( value, denominations, minCoinsCache );
+    for(auto const& cache: minCoinsCache)
+    {
+        std::cout << cache << ", ";
+    }
+    cout << endl;
+    return retVal;
+}
+
+int main() {
+	
+    int totalTC, numCoinType, amount;
+	
+	cin >> totalTC;
+	for ( int tcNum = 1; tcNum <= totalTC; tcNum++ ){
+	    vector<int> coinDenominations;
+    	cin >> numCoinType;
+    	cin >> amount;
+    	
+    	int denomination;
+    	
+    	for ( int i = 0; i < numCoinType; i++ ){
+    	    cin >> denomination;
+    	    coinDenominations.push_back( denomination );
+    	}
+    	
+    	cout << minNumOfCoins( amount, coinDenominations ) << endl;
+	}
+	
+	return 0;
+}
