@@ -1,0 +1,53 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+using namespace std;
+
+pair<int, int> findSum( int sum_to_find, int listSize, vector<int> &inputList ){
+    
+    sort( inputList.begin(), inputList.end() );
+    int i = 0;
+    int j = listSize-1;
+    
+    while( i < j ){
+        if( inputList[i] + inputList[j] > sum_to_find ) j--;
+        else if( inputList[i] + inputList[j] < sum_to_find )i++;
+        else break;
+    }
+    
+    if( i >= j ) return ( make_pair(0,0) );
+    
+    return ( make_pair( inputList[i], inputList[j] ) );
+}
+
+int main() {
+	
+    int sum_to_find;
+	vector<int> inputList;
+    int listElement, listSize;
+    	
+    cout << "Enter list size:";
+    cin  >> listSize;
+
+    cout << endl << "Enter list elements" << endl;
+	for ( int i = 0; i < listSize; i++ ){
+	    cin >> listElement;
+	    inputList.push_back( listElement );
+	}
+	
+    
+    cout << endl << "Enter sum to find:";
+    cin  >> sum_to_find;
+    
+    for ( int i = 0; i < listSize; i++ ){
+        cout << inputList[i] << " ";
+    }
+    
+	pair<int, int> result = findSum( sum_to_find, listSize, inputList );
+	
+	cout << endl << "First number = " << result.first << endl;
+	cout << "Second number = " << result.second << endl;
+
+	return 0;
+}
