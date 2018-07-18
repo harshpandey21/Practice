@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+using namespace std;
+
+void findMulArray( int inputArraySize, int inputArray[], int outputArray[] ){
+    
+    // Use outputArray as your leftProductArray
+    outputArray[0] = 1;    
+    
+    for( int left = 1; left < inputArraySize; left++ ){
+        outputArray[left] = outputArray[left-1] * inputArray[left-1];   
+    }
+    
+    int rightProduct = 1;
+    for( int right = inputArraySize - 2; right >= 0; right-- ){
+        rightProduct *= inputArray[right+1];
+        outputArray[right] = outputArray[right] * rightProduct;   
+    }
+}
+
+int main() {
+	
+	int *inputArray, *outputArray;
+    int inputArraySize;
+    	
+    cout << "Enter list size:";
+    cin  >> inputArraySize;
+
+    inputArray = new int[ inputArraySize ];
+    cout << endl << "Enter list elements" << endl;
+	for ( int i = 0; i < inputArraySize; i++ ){
+	    cin >> inputArray[i];
+	}
+    
+    cout << endl;
+    
+    for ( int i = 0; i < inputArraySize; i++ ){
+        cout << inputArray[i] << " ";
+    }
+    
+    cout << endl;
+    
+    outputArray = new int[ inputArraySize ];
+	findMulArray( inputArraySize, inputArray, outputArray );
+	
+    for ( int i = 0; i < inputArraySize; i++ ){
+        cout << outputArray[i] << " ";
+    }
+    
+    delete [] inputArray;
+    delete [] outputArray;
+	return 0;
+}
