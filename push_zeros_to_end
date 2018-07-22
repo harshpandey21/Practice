@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+using namespace std;
+
+void segregate_zeros( int inputArraySize, int inputArray[] ){
+    
+    int index_zero = 0;
+    int index_nzero = 1;
+    
+    while( index_nzero < inputArraySize ){
+        if ( inputArray[index_zero] != 0 ){
+            index_zero++;
+            index_nzero++;
+            continue;
+        }
+        if ( inputArray[index_nzero] == 0 ){
+            index_nzero++;
+            continue;
+        }
+        
+        inputArray[index_zero] = inputArray[index_nzero];
+        inputArray[index_nzero] = 0;
+        index_zero++;
+        index_nzero++;
+    }
+}
+
+int main() {
+	
+	int *inputArray, inputArraySize;
+    	
+    cout << "Enter list size:";
+    cin  >> inputArraySize;
+
+    inputArray = new int[ inputArraySize ];
+    cout << endl << "Enter list elements" << endl;
+	for ( int i = 0; i < inputArraySize; i++ ){
+	    cin >> inputArray[i];
+	}
+    
+    cout << endl;
+    
+    for ( int i = 0; i < inputArraySize; i++ ){
+        cout << inputArray[i] << " ";
+    }
+    
+    segregate_zeros( inputArraySize, inputArray );
+
+	cout << endl;
+    
+    for ( int i = 0; i < inputArraySize; i++ ){
+        cout << inputArray[i] << " ";
+    }
+    
+    delete [] inputArray;
+
+	return 0;
+}
