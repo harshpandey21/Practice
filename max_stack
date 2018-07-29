@@ -1,0 +1,150 @@
+#include <iostream>
+
+using namespace std;
+
+class max_stack{
+    
+    public:
+        bool Push( int data );
+        void Pop();
+        int& Top();
+        bool IsEmpty();
+        void Clear();
+        void Print();
+        int& Max();
+        
+        max_stack(){
+            top = nullptr;
+            max = nullptr;
+            size = 0;
+            cout << "Created empty stack" << endl;
+        }
+        
+        ~max_stack(){
+            Clear();
+            cout << "Destroying the stack" << endl;
+        }
+        
+    private:
+        struct node{
+            int data;
+            node* next;
+            node* prev_max;
+            
+            node( int value ){
+                next = nullptr;
+                prev_max = nullptr;
+                data = value; 
+            }
+        };
+        
+        node* top;
+        size_t size;
+        node* max;
+};
+
+void max_stack::Clear(){
+    node* pNode = top;
+    
+    while( nullptr != pNode ){
+        delete pNode;
+        pNode = pNode->next;
+    }
+    
+    top = nullptr;
+    max = nullptr;
+    size = 0;
+}
+
+bool max_stack::IsEmpty(){
+    return ( nullptr == top );
+}
+
+bool max_stack::Push( int data ){
+    node* pNode = new node( data );
+    if ( nullptr == pNode ){
+        // Failed to create a new node, return false.
+        return false;
+    }
+    
+    pNode->next = top;
+    top = pNode;
+    
+    // Figure out the max.
+    if( max == nullptr ){
+        max = top;
+    }
+    else{
+        if ( max->data < data ){
+            top->prev_max = max;
+            max = top;
+        } 
+    }
+    
+    return true;
+}
+
+void max_stack::Pop(){
+    if ( nullptr == top ) return;
+    
+    // Figure out the next max.
+    if ( top == max ){
+        // We are deleting the current max, max instance needs
+        // to be updated with the prev_max;
+        max = top->prev_max;
+    }
+    
+    node* pNode = top;
+    top = top->next;
+    free( pNode );
+    
+    size--;
+}
+
+int& max_stack::Max(){
+    if( nullptr != max ){
+        return max->data;
+    }
+}
+
+int& max_stack::Top(){
+    if ( nullptr != top ){
+        return top->data;
+    }
+}
+
+void max_stack::Print(){
+    node* pNode = top;
+    
+    while( nullptr != pNode ){
+        cout << pNode->data << "->";
+        pNode = pNode->next;
+    }
+}
+
+// Driver program.
+int main() {
+    	
+    max_stack myList;
+    
+    myList.Push(10);
+    myList.Push(10);
+    myList.Push(8);
+    
+    myList.Print();
+    cout << endl << myList.Max() << endl;
+    
+    myList.IsEmpty() ? ( cout << "Fail" ) : ( cout << "Pass");
+    cout << endl;
+    
+    myList.Pop();
+    myList.Pop();
+    
+    cout << endl << myList.Max() << endl;
+    myList.Pop();
+    myList.Pop();
+    
+    if( !myList.IsEmpty() ) cout << endl << myList.Max() << endl;
+    
+	return 0;
+}
