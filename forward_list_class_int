@@ -1,0 +1,153 @@
+#include <iostream>
+
+using namespace std;
+
+class forward_list{
+    
+    private:
+        struct Node{
+            int value;
+            Node* nextNode;
+            
+            Node(){
+                value = 0;
+                nextNode = nullptr;   
+            }
+        };
+        
+        Node* head;
+        size_t size;
+    
+    public:
+    
+        forward_list();
+        virtual ~forward_list();
+        
+        void AddToFront( int data );
+        void AddToEnd( int data );
+        bool AddAfterValue( int value, int data );
+        void Delete( unsigned int index );
+        bool IsEmpty();
+        void Clear();
+        void Print();
+};
+
+forward_list::forward_list(){
+    head = nullptr;
+    size = 0;
+    cout << "Creating empty list" << endl;
+}
+
+forward_list::~forward_list(){
+    Clear();
+    cout << "Destroying list" << endl;
+}
+
+void forward_list::Print(){
+
+    Node* pNode = head;
+    
+    while( nullptr != pNode ){
+        cout << pNode->value << "->";
+        pNode = pNode->nextNode;
+    }
+    
+    cout << endl;
+}
+
+void forward_list::Clear(){
+    
+  Node* pNodeCurr = head;
+  Node* pNodeNext = head;
+  
+  while( pNodeCurr != nullptr ){
+      pNodeNext = pNodeCurr->nextNode;
+      delete pNodeCurr;
+      pNodeCurr = pNodeNext;
+  }
+  
+  head = nullptr;
+  size = 0;
+  
+  cout << "Emptied the list" << endl;
+}
+
+bool forward_list::IsEmpty(){
+    return ( size == 0 );
+}
+
+void forward_list::AddToFront( int data ){
+    Node* pNode = head;
+    head = new Node();
+    head->value = data;
+    head->nextNode = pNode;
+}
+
+void forward_list::AddToEnd( int data ){
+
+    Node* pNodeCurr = head;
+    Node** ppNodePrev = &head;
+    
+    // Traverse till end of list.
+    while( pNodeCurr != nullptr ){
+        ppNodePrev = &( pNodeCurr->nextNode );
+        pNodeCurr = pNodeCurr->nextNode;
+    }
+    
+    *ppNodePrev = new Node();
+    (*ppNodePrev)->nextNode = nullptr;
+    (*ppNodePrev)->value = data;
+    
+    size++;
+}
+
+bool forward_list::AddAfterValue( int value, int data ){
+
+    Node* pNodeCurr = head;
+    Node* pNodeNext = head;
+    
+    // Traverse till end of list.
+    while( pNodeCurr != nullptr ){
+        if ( pNodeCurr->value == value ) break; 
+        pNodeCurr = pNodeCurr->nextNode;
+    }
+    
+    if( nullptr == pNodeCurr ){
+        cout << "Value does not exist";
+        return false;
+    }
+    
+    pNodeNext = pNodeCurr->nextNode;
+    pNodeCurr->nextNode = new Node();
+    pNodeCurr->nextNode->nextNode = pNodeNext;
+    pNodeCurr->nextNode->value = data;
+    
+    size++;
+    return true;
+}
+
+int main() {
+    	
+    forward_list myList;
+    
+    myList.AddToEnd(10);
+    myList.AddToEnd(11);
+    myList.AddToEnd(12);
+    
+    myList.Print();
+    
+    myList.IsEmpty() ? ( cout << "Fail" ) : ( cout << "Pass");
+    cout << endl;
+    
+    myList.AddToFront(9);
+    myList.AddToFront(8);
+    
+    myList.Print();
+    
+    myList.AddAfterValue(9,0);
+    myList.AddAfterValue(12,1);
+    
+    myList.Print();
+    
+	return 0;
+}
