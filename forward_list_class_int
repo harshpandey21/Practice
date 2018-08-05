@@ -187,6 +187,21 @@ bool forward_list::DetectLoop( int &loopLength, int &loopStartValue ){
     return false;
 }
 
+void FindIntersectionAndUnion( forward_list &listA, forward_list &listB,
+                               forward_list &intersectionList, forward_list &unionList )
+{
+    if ( listA.IsEmpty() && listB.IsEmpty() ) return;
+    if ( listA.IsEmpty() && !listB.IsEmpty() ){
+        unionList = listB;
+    }
+    if ( !listA.IsEmpty() && listB.IsEmpty() ){
+        unionList = listA;
+    }
+    
+    // None of the input lists are empty.
+    // Sort the 2 lists.
+}
+
 int main() {
     	
     forward_list myList;
