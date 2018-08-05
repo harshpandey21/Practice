@@ -25,11 +25,13 @@ class forward_list{
         
         void AddToFront( int data );
         void AddToEnd( int data );
+        void AddToEndCreatingLoop( int data, int loopStart );
         bool AddAfterValue( int value, int data );
         void Delete( unsigned int index );
         bool IsEmpty();
         void Clear();
-        void Print();
+        void Print(int max=-1 );
+        bool DetectLoop( int &loopLength, int &loopStartValue );
 };
 
 forward_list::forward_list(){
@@ -39,17 +41,19 @@ forward_list::forward_list(){
 }
 
 forward_list::~forward_list(){
-    Clear();
+    //Clear();
     cout << "Destroying list" << endl;
 }
 
-void forward_list::Print(){
+void forward_list::Print( int max ){
 
     Node* pNode = head;
+    int count = 0;
     
-    while( nullptr != pNode ){
+    while( nullptr != pNode && count < max ){
         cout << pNode->value << "->";
         pNode = pNode->nextNode;
+        count++;
     }
     
     cout << endl;
@@ -101,6 +105,33 @@ void forward_list::AddToEnd( int data ){
     size++;
 }
 
+void forward_list::AddToEndCreatingLoop( int data, int loopStart ){
+
+    Node* pNodeCurr = head;
+    Node** ppNodePrev = &head;
+    int index = 0;
+    Node* pLoopStart = nullptr;
+    
+    // Traverse till end of list.
+    while( pNodeCurr != nullptr ){
+        ppNodePrev = &( pNodeCurr->nextNode );
+        if ( loopStart == index ){
+            pLoopStart = pNodeCurr;
+            cout << endl
+                 << "Starting point of loop is " << pLoopStart->value
+                 << endl;
+        }
+        pNodeCurr = pNodeCurr->nextNode;
+        index++;
+    }
+    
+    *ppNodePrev = new Node();
+    (*ppNodePrev)->nextNode = pLoopStart;
+    (*ppNodePrev)->value = data;
+    
+    size++;
+}
+
 bool forward_list::AddAfterValue( int value, int data ){
 
     Node* pNodeCurr = head;
@@ -126,28 +157,66 @@ bool forward_list::AddAfterValue( int value, int data ){
     return true;
 }
 
+bool forward_list::DetectLoop( int &loopLength, int &loopStartValue ){
+    Node* pSlow = head;
+    Node* pFast = head;
+    
+    while( nullptr != pFast ){
+        pFast = pFast->nextNode;
+        pSlow = pSlow->nextNode;
+        if ( nullptr != pFast ){
+            pFast = pFast->nextNode;
+            if ( pSlow == pFast ){
+                // We have a loop.
+                do{
+                    pFast = pFast->nextNode;
+                    loopLength++;
+                }
+                while( pSlow != pFast );
+                
+                pSlow = head;
+                while( pSlow != pFast ){
+                   pSlow = pSlow->nextNode;
+                   pFast = pFast->nextNode;
+                }
+                loopStartValue = pSlow->value;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 int main() {
     	
     forward_list myList;
     
+    myList.AddToEnd(1);
+    myList.AddToEnd(2);
+    myList.AddToEnd(3);
+    myList.AddToEnd(4);
+    myList.AddToEnd(5);
+    myList.AddToEnd(6);
+    myList.AddToEnd(7);
+    myList.AddToEnd(8);
+    myList.AddToEnd(9);
     myList.AddToEnd(10);
     myList.AddToEnd(11);
     myList.AddToEnd(12);
     
     myList.Print();
     
-    myList.IsEmpty() ? ( cout << "Fail" ) : ( cout << "Pass");
+    // myList.AddToEndCreatingLoop( 13, 4 );
+    
+    myList.Print(20);
+    
+    int loopLength = 0, loopStartValue;
+    
+    myList.DetectLoop( loopLength, loopStartValue )?
+    cout << "Loop detected of length " << loopLength << " starting at element value " << loopStartValue:
+    cout << "Loop not present";
+    
     cout << endl;
-    
-    myList.AddToFront(9);
-    myList.AddToFront(8);
-    
-    myList.Print();
-    
-    myList.AddAfterValue(9,0);
-    myList.AddAfterValue(12,1);
-    
-    myList.Print();
     
 	return 0;
 }
