@@ -1,0 +1,73 @@
+#include <iostream>
+
+using namespace std;
+
+void merge( int input[], int inputSize )
+{
+    int *tempOutput = new int[inputSize];
+    int leftIndex = 0;
+    int rightIndex = inputSize/2;
+    
+    for( int index=0; index<inputSize; index++ ){
+        if ( rightIndex == inputSize ){
+            // Right half is exhausted, simply copy the left half element and increment.
+            tempOutput[index] = input[leftIndex];
+            leftIndex++;
+        }
+        else if ( leftIndex == inputSize/2 ){
+            // Left half is exhausted, simply copy the right half element and increment.
+            tempOutput[index] = input[rightIndex];
+            rightIndex++;
+        }
+        else{ // Compare and merge
+            if ( input[leftIndex] <= input[rightIndex] ){
+                tempOutput[index] = input[leftIndex];
+                leftIndex++;
+            }
+            else{
+                tempOutput[index] = input[rightIndex];
+                rightIndex++;
+            }
+        }
+    }
+    
+    // Copy the tempOutput into the input array.
+    for( int index=0; index<inputSize; index++ ){
+        input[index] = tempOutput[index];
+    }
+    
+    delete [] tempOutput;
+    tempOutput = nullptr;
+}
+
+void mergeSort( int input[], int inputSize )
+{
+    if ( inputSize == 1 ) return;
+    
+    int halfSize = inputSize/2;
+    mergeSort( input, halfSize );
+    mergeSort( input+halfSize, inputSize-halfSize );
+    
+    // At this point, Left and right half are individually sorted.
+    // Merge the 2 halves and copy the result into input array.
+    merge( input, inputSize );
+}
+
+void printArray( int input[], int inputSize ){
+    for( int index=0; index<inputSize; index++ ){
+        cout << input[index] << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    	
+    int array[7] = {38, 27, 43, 3, 9, 82, 10};
+    cout << "Input Array:" << endl;
+    printArray(array, sizeof array/sizeof (array[0]));
+    mergeSort(array, sizeof array/sizeof (array[0]));
+    cout << "Sorted Array:" << endl;
+    printArray(array, sizeof array/sizeof (array[0]));
+    
+	return 0;
+}
