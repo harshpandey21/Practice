@@ -1,0 +1,29 @@
+1) Implementation of LRU cache in SW -
+
+Hash Table for indexing = unordered structure = < key, value = iterator of element in dq >
+Double Link List used as a dequeue for LRU implementation
+Wrap everything in a class and provide public APIs
+Get(key) and Put(key) would be the public functions.
+
+2) Sliding window ( size k ) maximum in each window for a given array input of size n.
+
+Naive: For every window of size k, loop inside and store the max.
+will have (n-k+1 * k ) operations = O(nk)
+
+Using Heap/Balanced BST: <ToDo>
+
+Using a DeQueue: DQ will be of size k 
+DQ will be maintained such that the max element for a window is always on the front.
+For first k elements ( till the first window size is reached ) do it seperately in the start. From then on, do for each element
+as every new element is a new window.
+New element will be added to the back. On each add we compare if the new element replaces the left most ( current max ).
+If yes recursively remove the left elements, till the left most element is > new element or only new element is left ( top = back ).
+Iterate for all n elements.
+Will run of 2n times. Each element is added once and removed once, so 2 operations per element = O(n) with O(k) space.
+
+3) Serialization, Deserialization of a String, object, structure. Understanding Protocol Buffers. Serializing a binary tree, n-ary tree.
+   Encoding - hoffman encoding.
+   
+
+
+
