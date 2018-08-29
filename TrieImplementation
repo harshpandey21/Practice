@@ -1,0 +1,81 @@
+class Trie {
+public:
+    /** Initialize your data structure here. */
+    Trie() {
+        root = nullptr;
+    }
+    
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        ChildNodeMap** level = &root;
+        Node* leafNode = nullptr;
+        
+        for( char&c : word ){
+            if ( *level == nullptr ){
+                *level = new ChildNodeMap();
+                (**level)[c] = Node();
+            }
+            leafNode = &((**level)[c]);
+            level = &((**level)[c].pChildNodes);
+        }
+        
+        if ( nullptr != leafNode) leafNode->isEndWord = true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        ChildNodeMap* level = root;
+        bool isWord = false;
+        
+        for( char&c : word ){
+            if ( level == nullptr ) return false; // No child nodes
+            
+            if ( level->find(c) == level->end() ) return false; // Child nodes exist but the particular char is absent.
+            
+            isWord = (*level)[c].isEndWord;
+            level = (*level)[c].pChildNodes;
+        }
+        
+        return isWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+        ChildNodeMap* level = root;
+        
+        for( char&c : prefix ){
+            if ( level == nullptr ) return false;
+            
+            if ( level->find(c) == level->end() ) return false; // Child nodes exist but the particular char is absent.
+            
+            level = (*level)[c].pChildNodes;
+        }
+         
+        return ( level == nullptr ) ? false : true;
+    }
+    
+private:
+    struct Node;
+    
+    typedef std::unordered_map< char, Node > ChildNodeMap;
+    
+    struct Node{
+        ChildNodeMap* pChildNodes;
+        bool isEndWord;
+        
+        Node(){
+            pChildNodes = nullptr;
+            isEndWord = false;
+        }
+    };
+    
+    ChildNodeMap* root;
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie obj = new Trie();
+ * obj.insert(word);
+ * bool param_2 = obj.search(word);
+ * bool param_3 = obj.startsWith(prefix);
+ */
