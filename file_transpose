@@ -1,0 +1,103 @@
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void transpose( char* buff, size_t buffSize ){
+    char* s = buff;
+    vector<vector<vector<char>> > matrix;
+    
+    while( s < (buff + buffSize) ){
+        vector<vector<char>> line;
+        while( *s != '\n' && s < (buff+buffSize)){
+            if( *s == ' ' ){
+                s += 1;
+                continue;
+            }
+            vector<char> word;
+            while( *s != ' ' && *s != '\n' && s < (buff+buffSize)){
+                word.push_back(*s);
+                s+=1;
+            }
+            line.push_back(word);            
+        }
+        s += 1;
+        matrix.push_back(line);
+    }
+   
+    for( int j = 0; j < matrix.size(); j++ ){
+        for( int i = 0; i < matrix[j].size(); i++ ){
+            for( int k = 0; k < matrix[j][i].size(); k++ ){
+                cout << matrix[j][i][k];
+            }
+            cout << ' ';
+        }
+        cout << endl;
+    }
+    
+    cout << endl;
+
+    int fd = open( "result.txt", O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR );
+
+    if ( fd < 0 ){
+        perror( "Open error" );
+        return; 
+    }   
+
+    char ws = ' ';
+    char nl = '\n';
+
+    for( int j = 0; j < matrix[0].size(); j++ ){
+        for( int i = 0; i < matrix.size(); i++ ){
+            for( int k = 0; k < matrix[i][j].size(); k++ ){
+                write( fd, &(matrix[i][j][k]), 1 );
+            }
+            write( fd, &ws , 1 );
+        }
+        write( fd, &nl, 1 );
+    }
+
+    close(fd);
+}
+
+int main( int argc, char** argv ){
+    if( argc < 2 ){
+        cout << "Insufficient arguments, Exiting" << endl;
+    }
+
+    char* fileName = argv[1];
+
+    int fd = open( fileName, O_RDONLY );
+
+    if ( fd < 0 ){
+        perror( "Open error" );
+        return -1;
+    }
+
+    cout << "File " << fileName << " opened successfully" << endl;
+
+    struct stat statBuf;
+    
+    if( fstat( fd, &statBuf ) != 0 ){
+        perror("File Stat failed");
+        return -1;
+    } 
+
+    char* buff = (char *) mmap( NULL, statBuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0 );
+
+    transpose(buff, statBuf.st_size);
+
+    if( munmap( buff, statBuf.st_size ) < 0 ){
+        perror("munmap failed");
+    }
+
+    if( close( fd ) ){
+        perror("File could not be closed");
+    }
+}
